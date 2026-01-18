@@ -1,0 +1,27 @@
+services:
+  web:
+    image: trello_clone_django
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      POSTGRESQL_HOST: postgresdb
+    depends_on:
+      - postgresdb
+
+  postgresdb:
+    image: postgres:16
+    container_name: postgresdb
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRESQL_DB}
+      POSTGRES_USER: ${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+    ports:
+      - "5432:5432"
