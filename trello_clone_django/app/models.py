@@ -1,3 +1,39 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
-# Create your models here.
+
+class User(AbstractUser):
+    # Only override email to make it unique and required
+    email = models.EmailField(unique=True)
+    
+    # Add your custom fields
+    is_verified = models.BooleanField(default=False)
+    profile_picture = models.ImageField(upload_to="user", blank=True)
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]  # Required for createsuperuser command
+
+    class Meta:
+        verbose_name = "User"
+
+    def __str__(self):
+        return self.get_full_name() or self.email
+
+    def get_full_name(self):
+        full_name = super().get_full_name()
+        return full_name if full_name.strip() else self.email
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    bio = models.TextField(blank=True, max_length=100)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)  # Changed from auto_now_add
+
+    class Meta:
+        verbose_name = "User Profile"
+
+    def __str__(self):
+        return self.user.email
