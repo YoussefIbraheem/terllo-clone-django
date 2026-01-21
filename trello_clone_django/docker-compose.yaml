@@ -4,14 +4,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app  # Mount your code
     env_file:
       - .env
     environment:
-      POSTGRESQL_HOST: postgresdb
+      POSTGRESQL_HOST: postgresdb  # Override with Docker service name
     depends_on:
       - postgresdb
+      - redis
+      - rabbitmq
 
   postgresdb:
     image: postgres:16
@@ -25,3 +30,41 @@ services:
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
     ports:
       - "5432:5432"
+
+  redis:
+    image: redis:8.4.0
+    container_name: redis_service
+    restart: always
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:4.2.2-management-alpine
+    container_name: rabbitmq_service
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  celery_worker:  # Changed name to be more descriptive
+    container_name: celery_worker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A trello_clone_django worker --loglevel=info
+    volumes:
+      - .:/app  # Mount your code
+    env_file:
+      - .env
+    environment:
+      POSTGRESQL_HOST: postgresdb  # Override with Docker service name
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
+    depends_on:
+      - postgresdb
+      - redis
+      - rabbitmq
+      - web

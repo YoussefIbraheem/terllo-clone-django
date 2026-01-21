@@ -4,15 +4,14 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
-    # Only override email to make it unique and required
-    email = models.EmailField(unique=True)
     
-    # Add your custom fields
+    email = models.EmailField(unique=True)
     is_verified = models.BooleanField(default=False)
     profile_picture = models.ImageField(upload_to="user", blank=True)
-
+    
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]  # Required for createsuperuser command
+    EMAIL_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
 
     class Meta:
         verbose_name = "User"
