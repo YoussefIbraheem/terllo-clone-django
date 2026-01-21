@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import views, permissions, response, status
 from rest_framework_simplejwt import tokens
 from .serializers import UserRegisterationSerializer, UserSerializer
-
+from .tasks import welcome_email_task
 # Create your views here.
 
 
@@ -14,6 +14,9 @@ class UserRegisterationView(views.APIView):
         serializer = UserRegisterationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            
+            welcome_email_task.delay(user.email, user.username)
+            
             refresh = tokens.RefreshToken.for_user(user=user)
 
             return response.Response(
