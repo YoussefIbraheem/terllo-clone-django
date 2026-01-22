@@ -1,0 +1,25 @@
+meta {
+  name: login
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/login
+  body: multipartForm
+  auth: inherit
+}
+
+headers {
+  Accept: application/json
+}
+
+body:multipart-form {
+  email: 
+  password: 
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

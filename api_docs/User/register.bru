@@ -5,9 +5,27 @@ meta {
 }
 
 post {
-  url: 
-  body: none
+  url: {{baseUrl}}/register/
+  body: formUrlEncoded
   auth: inherit
+}
+
+headers {
+  Accept: application/json
+}
+
+body:form-urlencoded {
+  username: testuser4
+  email: test4@test.com
+  password: password@123
+  password_confirm: password@123
+}
+
+body:multipart-form {
+  email: test@test.com
+  username: testuser1
+  password: password@123
+  password_confirm: password@123
 }
 
 settings {
