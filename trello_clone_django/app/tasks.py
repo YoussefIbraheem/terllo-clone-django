@@ -12,4 +12,3 @@ def welcome_email_task(user_email, user_name):
     # Simulate sending email
     logger.info(f"Sending welcome email to {user_email}")
     # Here you would integrate with an email service provider
-    print(f"Welcome {user_name}! Your email {user_email} has been registered.")

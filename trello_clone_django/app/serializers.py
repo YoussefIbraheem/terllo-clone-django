@@ -21,13 +21,12 @@ class UserRegisterationSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "email": {"required": True},
             "username": {"required": True},
-            "password": {"required": True},
-            "password_confirm": {"required": True},
+            "password": {"required": True, "write_only":True},
+            "password_confirm": {"required": True,"write_only":True},
         }
 
     def create(self, validated_data):
         validated_data.pop("password_confirm")
-        print(validated_data)
         user = User.objects.create(**validated_data)
         UserProfile.objects.create(user=user)
         return user

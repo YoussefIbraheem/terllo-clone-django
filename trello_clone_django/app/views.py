@@ -7,6 +7,11 @@ from .serializers import (
     UserLoginSerializer,
 )
 from .tasks import welcome_email_task
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 
 # Create your views here.
 
@@ -18,7 +23,8 @@ class UserRegisterationView(views.APIView):
     def post(self, request):
         serializer = UserRegisterationSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.validated_data["user"]
+
+            user = serializer.save()
 
             welcome_email_task.delay(user.email, user.username)
 
@@ -46,8 +52,12 @@ class UserLoginView(views.APIView):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data
-            
+
             refresh = tokens.RefreshToken.for_user(user=user)
+
+            logger.warning(
+                f"REFRESH TOKEN FOR USER {user.username}: {str(refresh)}", exc_info=True
+            )
 
             return response.Response(
                 {
