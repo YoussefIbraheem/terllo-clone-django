@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import UserRegisterationView , UserLoginView
+from .views import UserRegisterationView , UserLoginView , UserProfileView
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -28,5 +28,6 @@ urlpatterns = [
     ),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     path("register/", UserRegisterationView.as_view(), name="user-registration"),
-    path("login/", UserLoginView.as_view(),name="user-login")
+    path("login/", UserLoginView.as_view(),name="user-login"),
+    path("profile/",UserProfileView.as_view(),name="user-profile")
 ]

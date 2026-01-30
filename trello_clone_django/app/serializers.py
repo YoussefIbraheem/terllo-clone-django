@@ -21,8 +21,8 @@ class UserRegisterationSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "email": {"required": True},
             "username": {"required": True},
-            "password": {"required": True, "write_only":True},
-            "password_confirm": {"required": True,"write_only":True},
+            "password": {"required": True, "write_only": True},
+            "password_confirm": {"required": True, "write_only": True},
         }
 
     def create(self, validated_data):
@@ -93,3 +93,15 @@ class UserLoginSerializer(serializers.Serializer):
             )
 
         return user
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source="user.email", read_only=True)
+    username = serializers.CharField(source="user.username", read_only=True)
+    first_name = serializers.CharField(source="user.first_name", read_only=True)
+    last_name = serializers.CharField(source="user.last_name", read_only=True)
+    date_joined = serializers.DateTimeField(source="user.date_joined", read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ["email", "username", "first_name", "last_name", "date_joined", "bio"]

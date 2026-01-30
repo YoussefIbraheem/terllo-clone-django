@@ -5,7 +5,9 @@ from .serializers import (
     UserRegisterationSerializer,
     UserSerializer,
     UserLoginSerializer,
+    UserProfileSerializer
 )
+from .models import UserProfile
 from .tasks import welcome_email_task
 import logging
 
@@ -19,6 +21,7 @@ logger = logging.getLogger(__name__)
 class UserRegisterationView(views.APIView):
 
     permission_classes = [permissions.AllowAny]
+    authentication_classes = []
 
     def post(self, request):
         serializer = UserRegisterationSerializer(data=request.data)
@@ -47,6 +50,7 @@ class UserRegisterationView(views.APIView):
 class UserLoginView(views.APIView):
 
     permission_classes = [permissions.AllowAny]
+    authentication_classes = []
 
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
@@ -74,3 +78,22 @@ class UserLoginView(views.APIView):
             return response.Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class UserProfileView(views.APIView):
+    
+    permission_classes = [permissions.IsAuthenticated]
+    
+    
+    def get(self,request):
+        try:
+        
+            profile = request.user.profile
+            serializer = UserProfileSerializer(profile).data
+            return response.Response(serializer)
+        
+        except UserProfile.DoesNotExist:
+            profile = UserProfile.objects.create(user=request.user)
+            serializer = UserProfileSerializer(profile).data
+            return response.Response(serializer)
+            
