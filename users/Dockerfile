@@ -1,11 +1,11 @@
 # Use the official Python runtime image
 FROM python:3.12-slim  
 
-# Create the app directory
-RUN mkdir /app
+# Create the accounts directory
+RUN mkdir /accounts
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /accounts
 
 # Set environment variables 
 # Prevents Python from writing pyc files to disk
@@ -17,13 +17,13 @@ ENV PYTHONUNBUFFERED=1
 RUN pip install --upgrade pip 
 
 # Copy the Django project  and install dependencies
-COPY requirements.txt  /app/
+COPY requirements.txt  /accounts/
 
 # run this command to install all dependencies 
 RUN pip install -r requirements.txt
 
 # Copy the Django project to the container
-COPY . /app/
+COPY . /accounts/
 
 # Expose the Django port
 EXPOSE 8000

@@ -18,7 +18,7 @@
       "dependsOn": ["docker-build"],
       "python": {
         "args": ["runserver", "0.0.0.0:8000", "--nothreading", "--noreload"],
-        "file": "trello_clone_django/manage.py"
+        "file": "users/manage.py"
       }
     }
   ]

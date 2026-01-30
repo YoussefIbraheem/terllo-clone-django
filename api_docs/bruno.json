@@ -1,9 +1,6 @@
 {
   "version": "1",
-  "name": "trello_clone_django_api_docs",
+  "name": "users_api_docs",
   "type": "collection",
-  "ignore": [
-    "node_modules",
-    ".git"
-  ]
+  "ignore": ["node_modules", ".git"]
 }
