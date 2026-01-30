@@ -15,8 +15,8 @@ headers {
 }
 
 body:form-urlencoded {
-  username: testuser4
-  email: test4@test.com
+  username: testuser
+  email: test@test.com
   password: password@123
   password_confirm: password@123
 }
@@ -26,6 +26,11 @@ body:multipart-form {
   username: testuser1
   password: password@123
   password_confirm: password@123
+}
+
+script:post-response {
+  let token = res.body["tokens"]["access"]
+  bru.setEnvVar("accessToken", token)
 }
 
 settings {
