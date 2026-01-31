@@ -1,13 +1,17 @@
 meta {
-  name: profile
+  name: user-details
   type: http
-  seq: 3
+  seq: 7
 }
 
 get {
-  url: {{url}}/profile/
+  url: {{url}}/users/:pk/
   body: none
   auth: inherit
+}
+
+params:path {
+  pk: 
 }
 
 settings {

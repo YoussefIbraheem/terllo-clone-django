@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from rest_framework import views, permissions, response, status
+from rest_framework import views, permissions, response, status, generics
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework_simplejwt import tokens
 from .serializers import (
@@ -10,7 +11,7 @@ from .serializers import (
     UserPasswordChangeSerializer,
     UserLogoutSerializer,
 )
-from .models import UserProfile
+from .models import UserProfile, User
 from .tasks import welcome_email_task
 import logging
 
@@ -162,3 +163,27 @@ class UserLogoutView(views.APIView):
                 status=status.HTTP_200_OK,
             )
         return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserListView(generics.ListAPIView):
+
+    queryset = User.objects.all()
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = UserSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["email", "username", "is_verified"]
+    
+    @swagger_auto_schema(serializer_class=UserSerializer(many=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
+class UserDetailsView(generics.RetrieveAPIView):
+
+    queryset = User.objects.all()
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = UserSerializer
+
+    @swagger_auto_schema(serializer_class=UserSerializer)
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)

@@ -1,12 +1,25 @@
 from django.urls import path, include
-from .views import UserRegisterationView , UserLoginView , UserProfileView , UserChangePasswordView , UserLogoutView
-
+from .views import (
+    UserRegisterationView,
+    UserLoginView,
+    UserProfileView,
+    UserChangePasswordView,
+    UserLogoutView,
+    UserListView,
+    UserDetailsView,
+)
 
 
 urlpatterns = [
     path("register/", UserRegisterationView.as_view(), name="user-registration"),
-    path("login/", UserLoginView.as_view(),name="user-login"),
-    path("profile/",UserProfileView.as_view(),name="user-profile"),
-    path("change-password/", UserChangePasswordView.as_view() ,name="user-change-password"),
+    path("login/", UserLoginView.as_view(), name="user-login"),
+    path("profile/", UserProfileView.as_view(), name="user-profile"),
+    path(
+        "change-password/",
+        UserChangePasswordView.as_view(),
+        name="user-change-password",
+    ),
     path("logout/", UserLogoutView.as_view(), name="user-logout"),
+    path("users/", UserListView.as_view(), name="users-list"),
+    path("users/<int:pk>/", UserDetailsView.as_view(), name="user-details"),
 ]
