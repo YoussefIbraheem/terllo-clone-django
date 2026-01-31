@@ -6,7 +6,8 @@ from .serializers import (
     UserRegisterationSerializer,
     UserSerializer,
     UserLoginSerializer,
-    UserProfileSerializer
+    UserProfileSerializer,
+    UserPasswordChangeSerializer,
 )
 from .models import UserProfile
 from .tasks import welcome_email_task
@@ -84,19 +85,58 @@ class UserLoginView(views.APIView):
 
 
 class UserProfileView(views.APIView):
-    
+
     permission_classes = [permissions.IsAuthenticated]
-    
+
     @swagger_auto_schema(responses={200: UserProfileSerializer()})
-    def get(self,request):
+    def get(self, request):
         try:
-        
+
             profile = request.user.profile
             serializer = UserProfileSerializer(profile).data
             return response.Response(serializer)
-        
+
         except UserProfile.DoesNotExist:
             profile = UserProfile.objects.create(user=request.user)
             serializer = UserProfileSerializer(profile).data
             return response.Response(serializer)
+
+    @swagger_auto_schema(
+        request_body=UserProfileSerializer, responses={200: UserProfileSerializer()}
+    )
+    def put(self, request):
+        try:
+            profile = request.user.profile
+        except UserProfile.DoesNotExist:
+            profile = UserProfile.objects.create(user=request.user)
+
+        serializer = UserProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return response.Response(serializer.data)
+        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserChangePasswordView(views.APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    @swagger_auto_schema(
+        request_body=UserPasswordChangeSerializer,
+        responses={
+            200: "Password Updated Successfully!",
+        }
+    )
+    def post(self, request):
+        serializer = UserPasswordChangeSerializer(
+            data=request.data, context={"request": request}
+        )
+        if serializer.is_valid():
             
+            serializer.save()
+            
+            return response.Response(
+                {"message": "Password Updated Successfully!"},
+                status=status.HTTP_200_OK,
+            )
+        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
