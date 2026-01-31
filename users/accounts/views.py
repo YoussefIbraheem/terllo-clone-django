@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import views, permissions, response, status
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework_simplejwt import tokens
 from .serializers import (
     UserRegisterationSerializer,
@@ -23,6 +24,7 @@ class UserRegisterationView(views.APIView):
     permission_classes = [permissions.AllowAny]
     authentication_classes = []
 
+    @swagger_auto_schema(request_body=UserRegisterationSerializer)
     def post(self, request):
         serializer = UserRegisterationSerializer(data=request.data)
         if serializer.is_valid():
@@ -52,6 +54,7 @@ class UserLoginView(views.APIView):
     permission_classes = [permissions.AllowAny]
     authentication_classes = []
 
+    @swagger_auto_schema(request_body=UserLoginSerializer)
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -84,7 +87,7 @@ class UserProfileView(views.APIView):
     
     permission_classes = [permissions.IsAuthenticated]
     
-    
+    @swagger_auto_schema(responses={200: UserProfileSerializer()})
     def get(self,request):
         try:
         

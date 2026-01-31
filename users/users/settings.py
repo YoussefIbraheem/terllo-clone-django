@@ -159,6 +159,16 @@ LOGGING = {
     },
 }
 
+SWAGGER_SETTINGS = {
+    "DEFAULT_INFO": "import.path.to.urls.api_info",
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+        }
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
