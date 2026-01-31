@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User, UserProfile
 from django.contrib.auth import password_validation, hashers, authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserRegisterationSerializer(serializers.ModelSerializer):
@@ -133,3 +134,22 @@ class UserPasswordChangeSerializer(serializers.Serializer):
         user.set_password(self.validated_data["new_password"])
         user.save()
         return user
+
+
+class UserLogoutSerializer(serializers.Serializer):
+    
+    refresh_token = serializers.CharField(required=True, write_only=True)
+    
+    def validate_refresh_token(self, value):
+        try:
+            token = RefreshToken(value)
+        except Exception as e:
+            raise serializers.ValidationError("Invalid refresh token") from e
+        return value
+
+
+    def save(self):
+        token = RefreshToken(self.validated_data["refresh_token"])
+        token.blacklist()
+
+        return

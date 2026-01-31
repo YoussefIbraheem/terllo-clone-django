@@ -1,11 +1,11 @@
 meta {
-  name: change_password
+  name: logout
   type: http
-  seq: 4
+  seq: 5
 }
 
 post {
-  url: {{baseUrl}}/{{apiExt}}/change-password/
+  url: {{baseUrl}}/{{apiExt}}/logout/
   body: multipartForm
   auth: inherit
 }
@@ -15,9 +15,7 @@ headers {
 }
 
 body:multipart-form {
-  current_password: password@123
-  new_password: password@456
-  confirm_new_password: password@456
+  refresh_token: {{refreshToken}}
 }
 
 settings {

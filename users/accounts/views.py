@@ -8,6 +8,7 @@ from .serializers import (
     UserLoginSerializer,
     UserProfileSerializer,
     UserPasswordChangeSerializer,
+    UserLogoutSerializer,
 )
 from .models import UserProfile
 from .tasks import welcome_email_task
@@ -125,18 +126,39 @@ class UserChangePasswordView(views.APIView):
         request_body=UserPasswordChangeSerializer,
         responses={
             200: "Password Updated Successfully!",
-        }
+        },
     )
     def post(self, request):
         serializer = UserPasswordChangeSerializer(
             data=request.data, context={"request": request}
         )
         if serializer.is_valid():
-            
+
             serializer.save()
-            
+
             return response.Response(
                 {"message": "Password Updated Successfully!"},
+                status=status.HTTP_200_OK,
+            )
+        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserLogoutView(views.APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    @swagger_auto_schema(
+        request_body=UserLogoutSerializer,
+        responses={200: "User logged out successfully."},
+    )
+    def post(self, request):
+        serializer = UserLogoutSerializer(
+            data=request.data, context={"request": request}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return response.Response(
+                {"message": "User logged out successfully."},
                 status=status.HTTP_200_OK,
             )
         return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

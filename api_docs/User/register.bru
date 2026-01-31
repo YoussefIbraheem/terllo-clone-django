@@ -29,8 +29,10 @@ body:multipart-form {
 }
 
 script:post-response {
-  let token = res.body["tokens"]["access"]
-  bru.setEnvVar("accessToken", token)
+  let accessToken = res.body["tokens"]["access"]
+  let refreshToken = res.body["tokens"]["refresh"]
+  bru.setEnvVar("accessToken", accessToken)
+  bru.setEnvVar("refreshToken", refreshToken)
 }
 
 settings {

@@ -16,7 +16,7 @@ headers {
 
 body:multipart-form {
   email: test@test.com
-  password: password@123
+  password: password@456
 }
 
 script:pre-request {
@@ -25,8 +25,10 @@ script:pre-request {
 }
 
 script:post-response {
-  let token = res.body["tokens"]["access"]
-  bru.setEnvVar("accessToken", token)
+  let accessToken = res.body["tokens"]["access"]
+  let refreshToken = res.body["tokens"]["refresh"]
+  bru.setEnvVar("accessToken", accessToken)
+  bru.setEnvVar("refreshToken", refreshToken)
 }
 
 settings {
