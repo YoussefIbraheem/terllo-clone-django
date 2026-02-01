@@ -488,7 +488,7 @@ class UserListTestCase(TestCase):
         response = self.client.get(self.list_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data["results"]), 2)
+        self.assertGreaterEqual(len(response.data), 2)
 
     def test_list_users_as_non_admin(self):
         """Test listing users without admin permission"""
@@ -509,8 +509,8 @@ class UserListTestCase(TestCase):
         response = self.client.get(self.list_url, {"email": "user1@example.com"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["results"]), 1)
-        self.assertEqual(response.data["results"][0]["email"], "user1@example.com")
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["email"], "user1@example.com")
 
     def test_list_users_filter_by_username(self):
         """Test filtering users by username"""
@@ -518,8 +518,8 @@ class UserListTestCase(TestCase):
         response = self.client.get(self.list_url, {"username": "user1"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["results"]), 1)
-        self.assertEqual(response.data["results"][0]["username"], "user1")
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["username"], "user1")
 
     def test_list_users_filter_by_verification(self):
         """Test filtering users by verification status"""
@@ -527,8 +527,7 @@ class UserListTestCase(TestCase):
         response = self.client.get(self.list_url, {"is_verified": True})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
-        for user in response.data["results"]:
+        for user in response.data:
             self.assertTrue(user["is_verified"])
 
 
