@@ -1,6 +1,6 @@
 services:
   web:
-    image: users
+    image: trello_clone_django
     build:
       context: .
       dockerfile: Dockerfile
