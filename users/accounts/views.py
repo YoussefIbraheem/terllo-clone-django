@@ -11,8 +11,9 @@ from .serializers import (
     UserPasswordChangeSerializer,
     UserLogoutSerializer,
 )
-from .models import UserProfile, User
-from .tasks import welcome_email_task
+from .models import UserProfile, User, UserVerification
+from .tasks import welcome_email_task, verification_email_task
+from utils.generate_unique_number import generate_verification_code
 import logging
 
 
@@ -62,7 +63,7 @@ class UserLoginView(views.APIView):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data
-
+            
             refresh = tokens.RefreshToken.for_user(user=user)
 
             logger.warning(
@@ -172,7 +173,7 @@ class UserListView(generics.ListAPIView):
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["email", "username", "is_verified"]
-    
+
     @swagger_auto_schema(serializer_class=UserSerializer(many=True))
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -187,3 +188,43 @@ class UserDetailsView(generics.RetrieveAPIView):
     @swagger_auto_schema(serializer_class=UserSerializer)
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+
+class UserVerificationEmailView(views.APIView):
+
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+
+    @swagger_auto_schema(
+        manual_parameters=[],
+        responses={200: "User verified successfully."},
+    )
+    def post(self, request):
+
+        email = request.data.get("email")
+        code = request.data.get("code")
+
+        try:
+            user = User.objects.get(email=email)
+            verification = user.verification
+
+            if verification.code == code:
+                logger.info(
+                    f"Verifying user {user.email} ,Given code:{code}, Expected code:{verification.code}"
+                )
+                user.is_verified = True
+                user.save()
+
+                verification.delete()
+
+                return response.Response("User verified successfully.")
+            else:
+                return response.Response(
+                    f"Error With Verification Code :{e}",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        except Exception as e:
+            return response.Response(
+                f"Error Verifying User:{e}", status=status.HTTP_400_BAD_REQUEST
+            )

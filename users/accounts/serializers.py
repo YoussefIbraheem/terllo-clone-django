@@ -1,5 +1,10 @@
+from urllib import response
+from psycopg import logger
 from rest_framework import serializers
-from .models import User, UserProfile
+
+from .tasks import verification_email_task
+from utils.generate_unique_number import generate_verification_code
+from .models import User, UserProfile, UserVerification
 from django.contrib.auth import password_validation, hashers, authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -84,10 +89,21 @@ class UserLoginSerializer(serializers.Serializer):
 
         if not user:
             raise serializers.ValidationError("Invalid Credentials.")
+        
+        
         if not user.is_verified:
+
+            code = UserVerification.objects.update_or_create(
+                user=user, defaults={"code": generate_verification_code()}
+            )[0]
+
+            logger.info(f"USER DATA:{user.id} \n CODE:{code.code}")
+            verification_email_task.delay(user.id, code.code)
+
             raise serializers.ValidationError(
-                "Unverified user please contact us for verification."
+                "Account not verified. A new verification code has been sent to your email."
             )
+
         if not user.is_active:
             raise serializers.ValidationError(
                 "This account is inactive, refer to us for reverification."
@@ -137,16 +153,15 @@ class UserPasswordChangeSerializer(serializers.Serializer):
 
 
 class UserLogoutSerializer(serializers.Serializer):
-    
+
     refresh_token = serializers.CharField(required=True, write_only=True)
-    
+
     def validate_refresh_token(self, value):
         try:
             token = RefreshToken(value)
         except Exception as e:
             raise serializers.ValidationError("Invalid refresh token") from e
         return value
-
 
     def save(self):
         token = RefreshToken(self.validated_data["refresh_token"])
