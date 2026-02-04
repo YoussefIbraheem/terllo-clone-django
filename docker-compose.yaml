@@ -2,15 +2,16 @@ services:
   web:
     image: trello_clone_django
     build:
-      context: .
+      context: ./services/users
       dockerfile: Dockerfile
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     volumes:
-      - .:/accounts # Mount your code
+      - ./services/users:/accounts 
+    working_dir: /accounts
     env_file:
-      - .env
+      - ./services/users/.env
     environment:
       POSTGRESQL_HOST: postgresdb # Override with Docker service name
     depends_on:
@@ -52,13 +53,14 @@ services:
   celery_worker: # Changed name to be more descriptive
     container_name: celery_worker
     build:
-      context: .
+      context: ./services/users
       dockerfile: Dockerfile
     command: celery -A users worker --loglevel=info
     volumes:
-      - .:/accounts # Mount your code
+      - ./services/users:/accounts 
+    working_dir: /accounts
     env_file:
-      - .env
+      - ./services/users/.env
     environment:
       POSTGRESQL_HOST: postgresdb # Override with Docker service name
       CELERY_BROKER_URL: ${CELERY_BROKER_URL}
