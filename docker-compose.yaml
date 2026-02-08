@@ -8,7 +8,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./services/users:/accounts 
+      - ./services/users:/accounts
     working_dir: /accounts
     env_file:
       - ./services/users/.env
@@ -19,6 +19,22 @@ services:
       - redis
       - rabbitmq
 
+  tasks-service:
+    build: ./services/tasks
+    container_name: tasks_service
+    ports:
+      - "5005:5005"
+    depends_on:
+      - postgresdb
+    env_file:
+      - ./services/tasks/.env
+    environment:
+      - HOST=${HOST}
+      - PORT=${PORT}
+      - DEBUG=${DEBUG}
+      - DATABASE_URL=${DB_URL}
+    volumes:
+      - ./services/tasks:/app/tasks
   postgresdb:
     image: postgres:16
     container_name: postgresdb
@@ -57,7 +73,7 @@ services:
       dockerfile: Dockerfile
     command: celery -A users worker --loglevel=info
     volumes:
-      - ./services/users:/accounts 
+      - ./services/users:/accounts
     working_dir: /accounts
     env_file:
       - ./services/users/.env
