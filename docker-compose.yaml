@@ -12,8 +12,6 @@ services:
     working_dir: /accounts
     env_file:
       - ./services/users/.env
-    environment:
-      POSTGRESQL_HOST: postgresdb # Override with Docker service name
     depends_on:
       - postgresdb
       - redis
