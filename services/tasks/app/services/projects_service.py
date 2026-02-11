@@ -5,14 +5,14 @@ from app.db.database import get_db_session
 
 
 def get_projects_by_owner(
-    owner_id: str, limit: int = 50, offest: int = 0
+    owner_id: str, limit: int = 50, offset: int = 0
 ) -> List[ProjectResponse]:
 
     with get_db_session() as db:
         db_projects = (
             db.query(Project)
             .filter(Project.owner_id == owner_id)
-            .offset(offest)
+            .offset(offset)
             .limit(limit)
             .all()
         )
