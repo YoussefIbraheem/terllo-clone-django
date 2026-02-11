@@ -10,7 +10,9 @@ class ProjectBase(BaseModel):
 
 
 class ProjectCreate(ProjectBase):
-    pass
+    name: str = Field(..., min_length=1, max_length=255, description="Project Name")
+    description: Optional[str] = Field(None, description="Project Description")
+    owner_id: int = Field(..., description="Owner ID")
 
 
 class ProjectUpdate(ProjectBase):
