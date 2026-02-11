@@ -24,7 +24,7 @@ def get_project_by_id(project_id: int) -> Optional[ProjectResponse]:
 
     with get_db_session as db:
 
-        db_project = db.query(Project).filter(Project.id == project_id).first()
+        db_project = db.query(Project).filter(id=project_id).first()
         if db_project:
             return ProjectResponse.model_validate(db_project)
         return None
