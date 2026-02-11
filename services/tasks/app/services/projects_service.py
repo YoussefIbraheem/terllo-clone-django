@@ -22,7 +22,7 @@ def get_projects_by_owner(
 
 def get_project_by_id(project_id: int) -> Optional[ProjectResponse]:
 
-    with get_db_session as db:
+    with get_db_session() as db:
 
         db_project = db.query(Project).filter(id=project_id).first()
         if db_project:
@@ -31,7 +31,7 @@ def get_project_by_id(project_id: int) -> Optional[ProjectResponse]:
 
 
 def create_project(project_data: ProjectCreate) -> ProjectResponse:
-    with get_db_session as db:
+    with get_db_session() as db:
         db_project = Project(
             name=project_data.name,
             description=project_data.description,
@@ -46,7 +46,7 @@ def create_project(project_data: ProjectCreate) -> ProjectResponse:
 
 
 def update_project(project_id: int, project_data) -> Optional[ProjectResponse]:
-    with get_db_session as db:
+    with get_db_session() as db:
 
         db_project = db.query(Project).filter(id=project_id).first()
 
@@ -66,7 +66,7 @@ def update_project(project_id: int, project_data) -> Optional[ProjectResponse]:
 
 
 def delete_project(project_id: int) -> bool:
-    with get_db_session as db:
+    with get_db_session() as db:
 
         db_project = db.query(Project).filter(id=project_id).first()
 
