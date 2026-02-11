@@ -8,6 +8,16 @@ from sqlalchemy.orm import Session
 def get_projects_by_owner(
     db: Session, owner_id: str, limit: int = 50, offset: int = 0
 ) -> List[ProjectResponse]:
+    """Get a list of projects for a specific owner.
+
+    Keyword arguments:
+    db -- database session
+    owner_id -- the ID of the project owner
+    limit -- the maximum number of projects to return (default: 50)
+    offset -- the number of projects to skip before starting to collect the result set (default: 0)
+
+    Return: a list of ProjectResponse objects representing the projects owned by the specified owner.
+    """
 
     db_projects = (
         db.query(Project)
@@ -21,6 +31,13 @@ def get_projects_by_owner(
 
 
 def get_project_by_id(db: Session, project_id: int) -> Optional[ProjectResponse]:
+    """Get Project Details
+
+    Keyword arguments:
+    db -- database session
+    project_id -- the ID of the project to retrieve
+    Return: a ProjectResponse object representing the project with the specified ID, or None if not found
+    """
 
     db_project = db.query(Project).filter(id=project_id).first()
     if db_project:
@@ -29,6 +46,13 @@ def get_project_by_id(db: Session, project_id: int) -> Optional[ProjectResponse]
 
 
 def create_project(db: Session, project_data: ProjectCreate) -> ProjectResponse:
+    """Create Project
+
+    Keyword arguments:
+    db -- database session
+    project_data -- the data for the project to be created
+    Return: a ProjectResponse object representing the newly created project
+    """
 
     db_project = Project(
         name=project_data.name,
@@ -46,6 +70,14 @@ def create_project(db: Session, project_data: ProjectCreate) -> ProjectResponse:
 def update_project(
     db: Session, project_id: int, project_data
 ) -> Optional[ProjectResponse]:
+    """Update Project
+
+    Keyword arguments:
+    db -- database session
+    project_id -- the ID of the project to update
+    project_data -- the updated data for the project
+    Return: a ProjectResponse object representing the updated project, or None if not found
+    """
 
     db_project = db.query(Project).filter(id=project_id).first()
 
@@ -65,6 +97,13 @@ def update_project(
 
 
 def delete_project(db: Session, project_id: int) -> bool:
+    """Delete Project
+
+    Keyword arguments:
+    db -- database session
+    project_id -- the ID of the project to delete
+    Return: True if the project was deleted, False otherwise
+    """
 
     db_project = db.query(Project).filter(id=project_id).first()
 
