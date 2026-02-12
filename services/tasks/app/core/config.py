@@ -23,7 +23,7 @@ class Settings:
     DEBUG: bool = True
 
     # Database settings
-    URL: str = "postgresql://postgres:password@localhost:5432/trello_tasks_db"
+    DB_URL: str = "postgresql://postgres:password@localhost:5432/trello_tasks_db"
 
     _instance: Optional[Settings] = None
 
@@ -35,7 +35,7 @@ class Settings:
         self.HOST = os.getenv("HOST", self.HOST)
         self.PORT = os.getenv("PORT", self.PORT)
         self.DEBUG = os.getenv("DEBUG", str(self.DEBUG)).lower() == "true"
-        self.URL = os.getenv("URL", self.URL)
+        self.DB_URL = os.getenv("DB_URL", self.DB_URL)
 
     @classmethod
     def get_instance(cls) -> Settings:
