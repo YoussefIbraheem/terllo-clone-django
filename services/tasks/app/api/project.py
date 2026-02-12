@@ -1,11 +1,11 @@
-from app.services.projects_service import (
+from app.services.project_service import(
     get_projects_by_owner,
     get_project_by_id,
     create_project,
     update_project,
     delete_project,
 )
-from app.schemas.projects_schemas import (
+from app.schemas.project_schema import (
     ProjectCreate,
     ProjectUpdate,
     ProjectResponse,

@@ -1,6 +1,6 @@
 from typing import List, Optional
-from app.models.projects import Project
-from app.schemas.projects_schemas import ProjectCreate, ProjectUpdate, ProjectResponse
+from app.models.project import Project
+from app.schemas.project_schema import ProjectCreate, ProjectUpdate, ProjectResponse
 from app.db.database import get_db_session
 
 

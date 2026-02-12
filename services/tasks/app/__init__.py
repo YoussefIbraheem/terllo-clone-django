@@ -13,7 +13,7 @@ def create_app() -> Flask:
 
     migrate.init_app(app=app, db=None, directory="./migrations")
     
-    from .api.projects import projects_bp
+    from .api.project import projects_bp
     app.register_blueprint(projects_bp)
 
     return app
