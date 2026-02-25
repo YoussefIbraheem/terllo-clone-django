@@ -84,18 +84,8 @@ def update_task(task_id: int, task_data: TaskUpdate) -> Optional[TaskResponse]:
         if not db_task:
             raise ValueError(f"Task with ID {task_id} not found!")
 
-        if task_data.title is not None:
-            db_task.title = task_data.title
-        if task_data.description is not None:
-            db_task.description = task_data.description
-        if task_data.status is not None:
-            db_task.status = task_data.status
-        if task_data.priority is not None:
-            db_task.priority = task_data.priority
-        if task_data.assigned_to is not None:
-            db_task.assigned_to = task_data.assigned_to
-        if task_data.due_date is not None:
-            db_task.due_date = task_data.due_date
+        for field, value in task_data.model_dump(exclude_unset=True).items():
+            setattr(db_task, field, value)
 
         db_task.updated_at = db.func.now()
         db.flush()
@@ -114,3 +104,26 @@ def delete_task(task_id: int) -> bool:
         db.delete(db_task)
         db.flush()
         return True
+
+
+def get_task_stats() -> dict:
+    with get_db_session() as db:
+        total_tasks = db.query(Task).count()
+        
+        tasks_by_status = {}
+        for status in TaskStatus:
+            count = db.query(Task).filter(Task.status == status).count()
+            tasks_by_status[status.value] = count
+            
+        tasks_by_priority = {}
+        for priority in TaskPriority:
+            count = db.query(Task).filter(Task.priority == priority).count()
+            tasks_by_priority[priority.value] = count
+            
+        
+
+        return {
+            "total_tasks": total_tasks,
+            "tasks_by_status": tasks_by_status,
+            "tasks_by_priority": tasks_by_priority
+        }
