@@ -1,5 +1,6 @@
 from typing import List, Optional
 from app.models.board import Board
+from app.models.project import Project
 from app.schemas.board_schema import BoardCreate, BoardUpdate, BoardResponse
 from app.db.database import get_db_session
 
@@ -7,13 +8,28 @@ from app.db.database import get_db_session
 def get_board_by_project(
     project_id: int, limit: int = 50, offset: int = 0
 ) -> List[BoardResponse]:
+    """Retrieve a paginated list of boards associated with a specific project.
+    Args:
+        project_id (int): The ID of the project to retrieve boards for.
+        limit (int, optional): The maximum number of boards to return. Defaults to 50.
+        offset (int, optional): The number of boards to skip before collecting results. Defaults to 0.
+    Returns:
+        List[BoardResponse]: A list of BoardResponse objects representing the boards for the project.
+    Raises:
+        ValueError: If the project with the specified ID does not exist.
+    """
+
+    db_project = db.query(Project).filter(Project.id == project_id).first()
+
+    if not db_project:
+        raise ValueError(f"Project with id {project_id} does not exist")
 
     with get_db_session() as db:
         db_boards = (
             db.query(Board)
             .filter(Board.project_id == project_id)
             .limit(limit)
-            .offset(limit)
+            .offset(offset)
             .all()
         )
 
@@ -21,17 +37,36 @@ def get_board_by_project(
 
 
 def get_board_by_id(board_id: int) -> Optional[BoardResponse]:
+    """Get Board Details
+
+    Args:
+        board_id (int): The ID of the board to retrieve
+
+    Raises:
+        ValueError: If the board with the given ID does not exist
+
+    Returns:
+        Optional[BoardResponse]: The board details if found, otherwise None
+    """
 
     with get_db_session() as db:
         db_board = db.query(Board).filter(Board.id == board_id).first()
 
         if not db_board:
-            return None
+            raise ValueError(f"Board with id {board_id} does not exist")
 
         return BoardResponse.model_dump(db_board)
 
 
 def create_board(board_data: BoardCreate) -> BoardResponse:
+    """Create Board
+
+    Args:
+        board_data (BoardCreate): The data for the board to be created
+
+    Returns:
+        BoardResponse: The created board details
+    """
 
     with get_db_session() as db:
         db_board = Board(
@@ -49,12 +84,22 @@ def create_board(board_data: BoardCreate) -> BoardResponse:
 
 
 def update_board(board_id: int, board_data: BoardUpdate) -> Optional[BoardResponse]:
+    """Update an existing board.
 
+    Args:
+        board_id (int): The ID of the board to update
+        board_data (BoardUpdate): The updated board data
+
+    Raises:
+        ValueError: If the board with the given ID does not exist
+    Returns:
+        Optional[BoardResponse]: The updated board details if the update was successful, or None if the board was not found
+    """
     with get_db_session() as db:
         db_board = db.query(Board).filter(Board.id == board_id).first()
 
         if not db_board:
-            return None
+            raise ValueError(f"Board with id {board_id} does not exist")
 
         if board_data.name is not None:
             db_board.name = board_data.name
@@ -72,15 +117,25 @@ def update_board(board_id: int, board_data: BoardUpdate) -> Optional[BoardRespon
 
 
 def delete_board(board_id: int) -> bool:
+    """Delete Board
 
+    Args:
+        board_id (int): The ID of the board to delete
+
+    Raises:
+        ValueError: If the board with the given ID does not exist
+
+    Returns:
+        bool: True if the board was deleted successfully, False otherwise
+    """
     with get_db_session() as db:
 
         db_board = db.query(Board).filter(Board.id == board_id).first()
 
         if not db_board:
-            return False
+            raise ValueError(f"Board with id {board_id} does not exist")
 
-        db_board.delete()
+        db.delete(db_board)
         db.flush()
 
         return True
