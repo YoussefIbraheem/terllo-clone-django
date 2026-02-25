@@ -1,10 +1,12 @@
 services:
+  # Django Users Service
   web:
     image: trello_clone_django
     build:
       context: ./services/users
       dockerfile: Dockerfile
     command: python manage.py runserver 0.0.0.0:8000
+    container_name: users_service
     ports:
       - "8000:8000"
     volumes:
@@ -13,10 +15,14 @@ services:
     env_file:
       - ./services/users/.env
     depends_on:
-      - postgresdb
-      - redis
-      - rabbitmq
+      postgresdb:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
 
+  # Flask Tasks Service
   tasks-service:
     build: 
       context: ./services/tasks
@@ -26,46 +32,55 @@ services:
       - "5005:5005"
     env_file:
       - ./services/tasks/.env
-    environment:
-      - DB_HOST=postgresdb
     volumes:
       - ./services/tasks:/app
     depends_on:
-      - postgresdb
+      postgresdb:
+        condition: service_healthy
 
-
+  # Single PostgreSQL Server (multiple databases)
   postgresdb:
-    image: postgres:16
+    image: postgres:16-alpine
     container_name: postgresdb
     restart: always
-    env_file:
-      - .env
     environment:
-      POSTGRES_DB: ${POSTGRESQL_DB}
-      POSTGRES_USER: ${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRES_USER: ${POSTGRESQL_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD:-password}
+      # No POSTGRES_DB here - we'll create multiple databases
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql  # ← Create databases on startup
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRESQL_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
-    image: redis:8.4.0
+    image: redis:8.4.0-alpine
     container_name: redis_service
     restart: always
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   rabbitmq:
     image: rabbitmq:4.2.2-management-alpine
     container_name: rabbitmq_service
     restart: always
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     ports:
       - "5672:5672"
       - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
-  celery_worker: # Changed name to be more descriptive
+  celery_worker:
     container_name: celery_worker
     build:
       context: ./services/users
@@ -77,11 +92,20 @@ services:
     env_file:
       - ./services/users/.env
     environment:
-      POSTGRESQL_HOST: postgresdb # Override with Docker service name
+      POSTGRESQL_HOST: postgresdb
       CELERY_BROKER_URL: ${CELERY_BROKER_URL}
       CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
     depends_on:
-      - postgresdb
-      - redis
-      - rabbitmq
-      - web
+      postgresdb:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      web:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:
