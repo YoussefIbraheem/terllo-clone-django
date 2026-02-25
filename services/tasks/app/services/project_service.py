@@ -39,7 +39,7 @@ def get_project_by_id(project_id: int) -> Optional[ProjectResponse]:
         db_project = db.query(Project).filter(Project.id == project_id).first()
         if db_project:
             return ProjectResponse.model_validate(db_project)
-        return None
+        raise ValueError(f"Project with id {project_id} does not exist")
 
 
 def create_project(project_data: ProjectCreate) -> ProjectResponse:
@@ -77,7 +77,7 @@ def update_project(
         db_project = db.query(Project).filter(Project.id == project_id).first()
 
         if not db_project:
-            return None
+            raise ValueError(f"Project with id {project_id} does not exist")
 
         if project_data.name is not None:
             db_project.name = project_data.name
@@ -105,5 +105,5 @@ def delete_project(project_id: int) -> bool:
             db.delete(db_project)
             db.flush()
             return True
-        else:
-            return False
+        
+        raise ValueError(f"Project with id {project_id} does not exist")

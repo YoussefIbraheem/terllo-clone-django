@@ -1,4 +1,4 @@
-from app.services.project_service import(
+from app.services.project_service import (
     get_projects_by_owner,
     get_project_by_id,
     create_project,
@@ -33,14 +33,18 @@ def projects_list():
     Example:
         GET /api/v1/projects?owner_id=1&limit=10&offset=0
     """
-    owner_id = request.args.get("owner_id")
-    limit = request.args.get("limit")
-    offset = request.args.get("offset")
-    projects = get_projects_by_owner(owner_id=owner_id, limit=limit, offset=offset)
+    try:
+        owner_id = request.args.get("owner_id")
+        limit = request.args.get("limit")
+        offset = request.args.get("offset")
 
-    data = [project.model_dump() for project in projects]
+        projects = get_projects_by_owner(owner_id=owner_id, limit=limit, offset=offset)
+        data = [project.model_dump() for project in projects]
 
-    return jsonify(data)
+        return jsonify(data)
+
+    except Exception as e:
+        return jsonify({"error": f"{e}"}), 500
 
 
 @projects_bp.route("/<int:project_id>", methods=["GET"])
@@ -61,12 +65,11 @@ def project_details(project_id: int):
     Example:
         GET /api/v1/projects/1
     """
-    project = get_project_by_id(project_id=project_id)
-
-    if not project:
-        return jsonify({"error:Project Not Found"}), 404
-
-    return jsonify(project.model_dump), 200
+    try:
+        project = get_project_by_id(project_id=project_id)
+        return jsonify(project.model_dump()), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to retrieve project: {e}"}), 500
 
 
 @projects_bp.route("/", methods=["POST"])
@@ -162,9 +165,8 @@ def project_delete(project_id):
     Example:
         DELETE /api/v1/projects/1
     """
-    deleted_project = delete_project(project_id=project_id)
-
-    if not deleted_project:
-        return jsonify({"error": "Failed to delete project"}), 404
-
-    return jsonify({"Project Deleted Successuflly!"}), 200
+    try:
+        delete_project(project_id=project_id)
+        return jsonify({"Project Deleted Successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to delete project: {str(e)}"}), 404  
