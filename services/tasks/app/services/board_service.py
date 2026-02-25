@@ -52,10 +52,10 @@ def get_board_by_id(board_id: int) -> Optional[BoardResponse]:
     with get_db_session() as db:
         db_board = db.query(Board).filter(Board.id == board_id).first()
 
-        if not db_board:
-            raise ValueError(f"Board with id {board_id} does not exist")
-
-        return BoardResponse.model_dump(db_board)
+        if db_board:
+            return BoardResponse.model_validate(db_board)
+        
+        raise ValueError(f"Board with id {board_id} does not exist")
 
 
 def create_board(board_data: BoardCreate) -> BoardResponse:
@@ -80,7 +80,7 @@ def create_board(board_data: BoardCreate) -> BoardResponse:
         db.flush()
         db.refresh(db_board)
 
-        return BoardResponse.model_dump(db_board)
+        return BoardResponse.model_validate(db_board)
 
 
 def update_board(board_id: int, board_data: BoardUpdate) -> Optional[BoardResponse]:
@@ -113,7 +113,7 @@ def update_board(board_id: int, board_data: BoardUpdate) -> Optional[BoardRespon
         db.flush()
         db.refresh(db_board)
 
-        return BoardResponse.model_dump(db_board)
+        return BoardResponse.model_validate(db_board)
 
 
 def delete_board(board_id: int) -> bool:
