@@ -24,8 +24,8 @@ class Task(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False, index=True)
     description = Column(Text(1000), nullable=True, index=True)
-    status = Column(Enum(TaskStatus), default=TaskStatus.TODO.value)
-    priority = Column(Enum(TaskPriority), default=TaskPriority.MEDIUM.value)
+    status = Column(Enum(TaskStatus), default=TaskStatus.TODO)
+    priority = Column(Enum(TaskPriority), default=TaskPriority.MEDIUM)
     due_date = Column(DateTime(timezone=True),nullable=False)
 
     user_id = Column(String(255), nullable=False, index=True)
