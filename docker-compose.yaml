@@ -38,7 +38,6 @@ services:
       postgresdb:
         condition: service_healthy
 
-  # Single PostgreSQL Server (multiple databases)
   postgresdb:
     image: postgres:16-alpine
     container_name: postgresdb
@@ -46,7 +45,6 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRESQL_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD:-password}
-      # No POSTGRES_DB here - we'll create multiple databases
     ports:
       - "5432:5432"
     volumes:
