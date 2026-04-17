@@ -11,9 +11,10 @@ class SchemaCollector:
         
     def collect(self):
         all_schemas = []
+        base_module = importlib.import_module(self.base_module)
         
         for _, module_name, is_pkg in pkgutil.walk_packages(
-        self.base_module.__path__, self.base_module.__name__ + "."
+        base_module.__path__, base_module.__name__ + "."
         ):
             try:
                 module = importlib.import_module(module_name)

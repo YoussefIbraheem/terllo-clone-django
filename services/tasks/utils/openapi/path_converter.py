@@ -9,7 +9,7 @@ class FlaskPathConverter:
         "string": {"type": "string"},
         "uuid":   {"type": "string",  "format": "uuid"},
     }
-    def convert(flask_path: str) -> tuple[str, list[dict]]:
+    def convert(self,flask_path: str) -> tuple[str, list[dict]]:
         """
         Converts Flask path syntax to OpenAPI path syntax and extracts path parameters.
 
@@ -22,7 +22,7 @@ class FlaskPathConverter:
         pattern = re.compile(r"<(?:(\w+):)?(\w+)>")
 
         
-        def replace_param(self,match):
+        def replace_param(match):
             converter = match.group(1) or "string"  # default to string if no type given
             param_name = match.group(2)
 

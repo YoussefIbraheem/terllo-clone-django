@@ -15,5 +15,7 @@ def create_app() -> Flask:
     
     from .api.project import projects_bp
     app.register_blueprint(projects_bp)
+    from .api.boards import boards_bp
+    app.register_blueprint(boards_bp)
 
     return app
