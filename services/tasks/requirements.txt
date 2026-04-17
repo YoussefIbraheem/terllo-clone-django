@@ -1,5 +1,6 @@
 alembic==1.18.3
 amqp==5.3.1
+aniso8601==10.0.1
 annotated-types==0.7.0
 asgiref==3.11.0
 attrs==25.4.0
@@ -18,7 +19,9 @@ djangorestframework==3.16.1
 djangorestframework_simplejwt==5.5.1
 drf-yasg==1.21.14
 Flask==3.1.2
+flask-cors==6.0.2
 Flask-Migrate==4.1.0
+flask-restplus==0.13.0
 Flask-SQLAlchemy==3.1.1
 greenlet==3.3.1
 importlib_resources==6.5.2
@@ -52,6 +55,8 @@ six==1.17.0
 SQLAlchemy==2.0.46
 sqlparse==0.5.5
 swagger-spec-validator==3.0.4
+swagger-ui-py==25.7.1
+swagger_ui==0.1.2
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 tzdata==2025.3
