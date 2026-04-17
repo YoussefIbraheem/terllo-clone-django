@@ -20,7 +20,7 @@ def initiate_swagger_ui():
         print(f"OpenAPI generation Error:{e}")
 
 
-@app.route("/")
+@app.route(f"{settings.API_V1_PREFIX}")
 def index():
     return f"Welcome to the {settings.SERVICE_NAME} service (version {settings.SERVICE_VERSION})!"
 

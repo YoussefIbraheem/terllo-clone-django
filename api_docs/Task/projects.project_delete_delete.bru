@@ -1,0 +1,50 @@
+meta {
+  name: projects.project_delete_delete
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{url}}/projects/:project_id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  project_id: 
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+}
+
+example {
+  name: 200 Response
+  description: Successful response
+  
+  request: {
+    url: {{baseUrl}}/api/v1/projects/:project_id
+    method: DELETE
+    mode: none
+    params:path: {
+      project_id: 
+    }
+  }
+  
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
