@@ -1,6 +1,6 @@
 services:
   # Django Users Service
-  web:
+  users-service:
     image: trello_clone_django
     build:
       context: ./services/users
@@ -100,7 +100,7 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_started
-      web:
+      users-service:
         condition: service_started
 
 volumes:
