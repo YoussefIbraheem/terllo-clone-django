@@ -1,13 +1,13 @@
 info:
-  name: projects.project_delete_delete
+  name: boards.board_update_put
   type: http
-  seq: 1
+  seq: 9
 
 http:
-  method: DELETE
-  url: "{{baseUrl}}/api/v1/projects/:project_id"
+  method: PUT
+  url: "{{url}}/boards/:board_id"
   params:
-    - name: project_id
+    - name: board_id
       value: ""
       type: path
   auth: inherit
@@ -22,10 +22,10 @@ examples:
   - name: 200 Response
     description: Successful response
     request:
-      url: "{{baseUrl}}/api/v1/projects/:project_id"
-      method: DELETE
+      url: "{{url}}/boards/:board_id"
+      method: PUT
       params:
-        - name: project_id
+        - name: board_id
           value: ""
           type: path
     response:

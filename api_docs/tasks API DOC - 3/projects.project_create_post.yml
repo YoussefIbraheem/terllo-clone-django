@@ -1,11 +1,11 @@
 info:
   name: projects.project_create_post
   type: http
-  seq: 1
+  seq: 2
 
 http:
   method: POST
-  url: "{{baseUrl}}/api/v1/projects/"
+  url: "{{url}}/projects/"
   auth: inherit
 
 settings:
@@ -18,7 +18,7 @@ examples:
   - name: 200 Response
     description: Successful response
     request:
-      url: "{{baseUrl}}/api/v1/projects/"
+      url: "{{url}}/projects/"
       method: POST
     response:
       status: 200

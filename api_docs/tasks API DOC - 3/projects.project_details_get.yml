@@ -1,11 +1,11 @@
 info:
-  name: projects.project_update_put
+  name: projects.project_details_get
   type: http
-  seq: 1
+  seq: 3
 
 http:
-  method: PUT
-  url: "{{baseUrl}}/api/v1/projects/:project_id"
+  method: GET
+  url: "{{url}}/projects/:project_id"
   params:
     - name: project_id
       value: ""
@@ -22,8 +22,8 @@ examples:
   - name: 200 Response
     description: Successful response
     request:
-      url: "{{baseUrl}}/api/v1/projects/:project_id"
-      method: PUT
+      url: "{{url}}/projects/:project_id"
+      method: GET
       params:
         - name: project_id
           value: ""
