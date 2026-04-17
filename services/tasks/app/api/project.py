@@ -8,11 +8,8 @@ from app.services.project_service import (
 from app.schemas.project_schema import (
     ProjectCreate,
     ProjectUpdate,
-    ProjectResponse,
 )
 from flask import Blueprint, request, jsonify
-from sqlalchemy.orm import Session
-from typing import List, Optional
 
 projects_bp = Blueprint("projects", __name__, url_prefix="/api/v1/projects")
 
