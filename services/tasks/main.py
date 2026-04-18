@@ -30,7 +30,6 @@ def index():
 if __name__ == "__main__":
     
     initiate_swagger_ui()
-    create_tables()
     
     print(
         f"Starting {settings.SERVICE_NAME} service (version {settings.SERVICE_VERSION}) on {settings.HOST}:{settings.PORT} with debug={settings.DEBUG}"
