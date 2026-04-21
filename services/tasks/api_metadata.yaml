@@ -1,0 +1,337 @@
+board:
+  boards_list:
+    name: boards_list
+    description: Retrieve a list of boards for a specific project.
+    method: GET
+    parameters:
+      - name: project_id
+        parameter_type: query
+        type: integer
+        required: true
+        example: 1
+      - name: limit
+        parameter_type: query
+        type: integer
+        required: false
+        example: 10
+      - name: offset
+        parameter_type: query
+        type: integer
+        required: false
+        example: 0
+
+  board_get:
+    name: board_get
+    description: Retrieve a specific board by its ID.
+    method: GET
+    parameters:
+      - name: board_id
+        parameter_type: path
+        type: integer
+        required: true
+        example: 1
+
+  board_create:
+    name: board_create
+    description: Create a new board.
+    method: POST
+    parameters:
+      - name: name
+        parameter_type: body
+        type: string
+        required: true
+        example: "Board 1"
+      - name: description
+        parameter_type: body
+        type: string
+        required: false
+        example: "A project board"
+      - name: project_id
+        parameter_type: body
+        type: string
+        required: true
+        example: "1"
+      - name: columns
+        parameter_type: body
+        type: array
+        required: false
+        example: ["ToDo", "InProgress", "Done"]
+
+  board_update:
+    name: board_update
+    description: Update a specific board by its ID.
+    method: PUT
+    parameters:
+      - name: board_id
+        parameter_type: path
+        type: integer
+        required: true
+        example: 1
+      - name: name
+        parameter_type: body
+        type: string
+        required: false
+        example: "Board 1"
+      - name: description
+        parameter_type: body
+        type: string
+        required: false
+        example: "A project board"
+
+  board_delete:
+    name: board_delete
+    description: Delete a specific board by its ID.
+    method: DELETE
+    parameters:
+      - name: board_id
+        parameter_type: path
+        type: integer
+        required: true
+        example: 1
+
+project:
+  projects_list:
+    name: projects_list
+    description: Retrieve a paginated list of projects filtered by owner.
+    method: GET
+    parameters:
+      - name: owner_id
+        parameter_type: query
+        type: integer
+        required: false
+        example: 1
+      - name: limit
+        parameter_type: query
+        type: integer
+        required: false
+        example: 10
+      - name: offset
+        parameter_type: query
+        type: integer
+        required: false
+        example: 0
+
+  project_details:
+    name: project_details
+    description: Retrieve details of a specific project by ID.
+    method: GET
+    parameters:
+      - name: project_id
+        parameter_type: path
+        type: integer
+        required: true
+        example: 1
+
+  project_create:
+    name: project_create
+    description: Create a new project with provided data.
+    method: POST
+    parameters:
+      - name: name
+        parameter_type: body
+        type: string
+        required: true
+        example: "Project 1"
+      - name: description
+        parameter_type: body
+        type: string
+        required: false
+        example: "A new project"
+      - name: owner_id
+        parameter_type: body
+        type: integer
+        required: true
+        example: 1
+
+  project_update:
+    name: project_update
+    description: Update an existing project with new data.
+    method: PUT
+    parameters:
+      - name: project_id
+        parameter_type: path
+        type: integer
+        required: true
+        example: 1
+      - name: name
+        parameter_type: body
+        type: string
+        required: false
+        example: "Project 1"
+      - name: description
+        parameter_type: body
+        type: string
+        required: false
+        example: "An updated project"
+
+  project_delete:
+    name: project_delete
+    description: Delete a project by ID.
+    method: DELETE
+    parameters:
+      - name: project_id
+        parameter_type: path
+        type: integer
+        required: true
+        example: 1
+
+task:
+  tasks_list:
+    name: tasks_list
+    description: Retrieve a list of tasks based on optional query parameters.
+    method: GET
+    parameters:
+      - name: board_id
+        parameter_type: query
+        type: integer
+        required: false
+        example: 1
+      - name: user_id
+        parameter_type: query
+        type: integer
+        required: false
+        example: 1
+      - name: assigned_to
+        parameter_type: query
+        type: integer
+        required: false
+        example: 2
+      - name: status
+        parameter_type: query
+        type: string
+        required: false
+        example: "todo"
+      - name: priority
+        parameter_type: query
+        type: string
+        required: false
+        example: "medium"
+      - name: limit
+        parameter_type: query
+        type: integer
+        required: false
+        example: 10
+      - name: offset
+        parameter_type: query
+        type: integer
+        required: false
+        example: 0
+
+  task_get:
+    name: task_get
+    description: Retrieve a specific task by its ID.
+    method: GET
+    parameters:
+      - name: task_id
+        parameter_type: path
+        type: integer
+        required: true
+        example: 1
+
+  task_create:
+    name: task_create
+    description: Create a new task.
+    method: POST
+    parameters:
+      - name: title
+        parameter_type: body
+        type: string
+        required: true
+        example: "Task 1"
+      - name: description
+        parameter_type: body
+        type: string
+        required: false
+        example: "A new task"
+      - name: status
+        parameter_type: body
+        type: string
+        required: false
+        example: "todo"
+      - name: priority
+        parameter_type: body
+        type: string
+        required: false
+        example: "medium"
+      - name: user_id
+        parameter_type: body
+        type: string
+        required: true
+        example: "1"
+      - name: assigned_to
+        parameter_type: body
+        type: string
+        required: true
+        example: "2"
+      - name: board_id
+        parameter_type: body
+        type: integer
+        required: true
+        example: 1
+      - name: due_date
+        parameter_type: body
+        type: string
+        required: false
+        example: "2026-12-31T00:00:00"
+
+  task_update:
+    name: task_update
+    description: Update an existing task.
+    method: PUT
+    parameters:
+      - name: task_id
+        parameter_type: path
+        type: integer
+        required: true
+        example: 1
+      - name: title
+        parameter_type: body
+        type: string
+        required: false
+        example: "Task 1"
+      - name: description
+        parameter_type: body
+        type: string
+        required: false
+        example: "An updated task"
+      - name: status
+        parameter_type: body
+        type: string
+        required: false
+        example: "in_progress"
+      - name: priority
+        parameter_type: body
+        type: string
+        required: false
+        example: "high"
+      - name: user_id
+        parameter_type: body
+        type: string
+        required: false
+        example: "1"
+      - name: assigned_to
+        parameter_type: body
+        type: string
+        required: false
+        example: "2"
+      - name: board_id
+        parameter_type: body
+        type: integer
+        required: false
+        example: 1
+      - name: due_date
+        parameter_type: body
+        type: string
+        required: false
+        example: "2026-12-31T00:00:00"
+
+  task_delete:
+    name: task_delete
+    description: Delete a task by its ID.
+    method: DELETE
+    parameters:
+      - name: task_id
+        parameter_type: path
+        type: integer
+        required: true
+        example: 1

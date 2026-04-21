@@ -6,12 +6,24 @@ from . import Base
 
 
 class TaskStatus(FlaskEnum):
+    """
+    Enum for task status.
+    TODO: Task is not started yet.
+    IN_PROGRESS: Task is currently being worked on.
+    DONE: Task is completed.
+    """
     TODO = "todo"
     IN_PROGRESS = "in_progress"
     DONE = "done"
 
 
 class TaskPriority(FlaskEnum):
+    """
+    Enum for task priority.
+    LOW: Low priority.
+    MEDIUM: Medium priority.
+    HIGH: High priority.
+    """
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"

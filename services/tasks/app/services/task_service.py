@@ -16,12 +16,13 @@ def get_tasks(
 ) -> List[TaskResponse]:
     with get_db_session() as db:
 
-        check_board = db.query(Board).filter(Board.id == board_id).first()
+        query = db.query(Task)
 
-        if not check_board:
-            raise ValueError(f"Board with ID of {board_id} does not exist!")
-
-        query = db.query(Task).filter(check_board.id == board_id)
+        if board_id:
+            check_board = db.query(Board).filter(Board.id == board_id).first()
+            if not check_board:
+                raise ValueError(f"Board with ID of {board_id} does not exist!")
+            query = query.filter(Task.board_id == board_id)
 
         if user_id:
             query = query.filter(Task.user_id == user_id)
@@ -108,22 +109,20 @@ def delete_task(task_id: int) -> bool:
 
 def get_task_stats() -> dict:
     with get_db_session() as db:
-        total_tasks = db.query(Task).count()
+        db_rows = db.query(Task.status, Task.priority, Task.user_id).all()
         
-        tasks_by_status = {}
-        for status in TaskStatus:
-            count = db.query(Task).filter(Task.status == status).count()
-            tasks_by_status[status.value] = count
-            
-        tasks_by_priority = {}
-        for priority in TaskPriority:
-            count = db.query(Task).filter(Task.priority == priority).count()
-            tasks_by_priority[priority.value] = count
+        tasks_by_status = {s.value:0 for s in TaskStatus}
+        tasks_by_priority = {p.value:0 for p in TaskPriority}
+        tasks_by_user = {}
+        for status , priority, user_id in db_rows:
+            tasks_by_status[status.value] +=1
+            tasks_by_priority[priority.value] +=1
+            tasks_by_user[user_id] = tasks_by_user.get(user_id,0) + 1
             
         
-
         return {
-            "total_tasks": total_tasks,
+            "total_tasks": len(db_rows),
             "tasks_by_status": tasks_by_status,
-            "tasks_by_priority": tasks_by_priority
+            "tasks_by_priority": tasks_by_priority,
+            "tasks_by_user":tasks_by_user
         }

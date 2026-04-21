@@ -1,0 +1,103 @@
+from app.schemas.task_schema import TaskCreate, TaskUpdate, TaskStats, TaskResponse 
+from app.services.task_service import (
+    get_tasks,
+    get_task_by_id,
+    create_task,
+    update_task,
+    delete_task,
+)
+from flask import jsonify, request, Blueprint
+
+task_bp = Blueprint('task',__name__,url_prefix="/api/v1/tasks/")
+
+@task_bp.route("/",methods=["GET"])
+def tasks_list():
+    """
+    Retrieve a list of tasks based on optional query parameters.
+    """
+    
+    try:
+        board_id =   request.args.get("board_id")
+        user_id = request.args.get("user_id")
+        assigned_to = request.args.get("assigned_to")
+        status = request.args.get("status")
+        priority = request.args.get("priority")
+        limit  = request.args.get("limit")
+        offest  = request.args.get("offest")
+        
+        tasks = get_tasks(board_id, user_id, assigned_to, status, priority, limit, offest)
+        
+        data = [task.model_dump() for task in tasks]
+        
+        return jsonify(data) , 200
+        
+    except Exception as e:
+        
+        return jsonify({"error": f"{e}"}), 500
+
+@task_bp.route("/<int:task_id>",methods=["GET"])
+def task_get(task_id):
+    """
+    Retrieve a specific task by its ID.
+    """
+    
+    try:
+        task_id = request.view_args(["task_id"])
+        task = get_task_by_id(task_id=task_id)
+        return jsonify(task.model_dump()), 200
+    
+    except Exception as e:
+        return jsonify({"error": f"{e}"}), 500
+    
+@task_bp.route("/",methods=["POST"])
+def task_create():
+    """
+    Create a new task.
+    """
+    
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No Data Provided"})
+    try:
+        
+        task_data = TaskCreate(**data)
+        created_task = create_task(task_data=task_data)
+        return jsonify(created_task.model_dump())
+    except Exception as e:
+        return jsonify({"error": f"{e}"}), 500
+    
+@task_bp.route("/<int:task_id>",methods=["PUT"])
+def task_update(task_id):
+    """
+    Update an existing task.
+    """
+    
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No Data Provided"}), 400
+    
+    try: 
+        
+        task_data = TaskUpdate(**data)
+        updated_task = update_task(task_id=task_id,task_data=task_data)
+        return jsonify(updated_task.model_dump())
+    except Exception as e:
+        return jsonify({"error": f"{e}"}), 500
+    
+
+@task_bp.route("/<int:task_id>",methods=["DELETE"])
+def task_delete(task_id):
+    """
+    Delete a task by its ID.
+    """
+    
+    try:
+        success = delete_task(task_id=task_id)
+        
+        if not success:
+            return jsonify({"error":"Task not found!"}), 404    
+        return jsonify({"message":"Task deleted successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": f"{e}"}), 500
+    
+    

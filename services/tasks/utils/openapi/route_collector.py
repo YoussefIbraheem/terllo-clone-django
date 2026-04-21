@@ -1,13 +1,18 @@
 from pydantic.json_schema import models_json_schema
 from flask import Flask
 from .path_converter import FlaskPathConverter
+from .yaml_extractor import YAMLExtractor
+
+
 class RouteCollector:
-    
-    def __init__(self, app: Flask, converter: FlaskPathConverter):
+
+    def __init__(
+        self, app: Flask, converter: FlaskPathConverter, yaml_extractor: YAMLExtractor
+    ):
         self.app = app
-        self.converter = converter 
-    
-    
+        self.converter = converter
+        self.yaml_extractor = yaml_extractor
+
     IGNORED_METHODS = {"HEAD", "OPTIONS"}
 
     def collect(self) -> dict:
@@ -31,9 +36,9 @@ class RouteCollector:
 
         with self.app.app_context():
             for rule in self.app.url_map.iter_rules():
-                if rule.endpoint == 'static':
+                if rule.endpoint == "static":
                     continue
-                
+
                 openapi_path, path_parameters = self.converter.convert(rule.rule)
 
                 if openapi_path not in paths:
@@ -43,16 +48,59 @@ class RouteCollector:
                 for method in rule.methods:
                     if method in self.IGNORED_METHODS:
                         continue
-                    
+
+                    endpoint = rule.endpoint.rsplit(".", 1)
+                    if len(endpoint) < 2:
+                        continue
+                    module_name, function_name = endpoint
+                    yaml_data = self.yaml_extractor.extract_function_data(
+                        module_name, function_name
+                    )
+                    parameters = []
+                    properties = {}
+
+                    for param in yaml_data.get("parameters"):
+                        if param["parameter_type"] in {"path","query"}:
+                            new_param = {
+                                "in": param["parameter_type"],
+                                "name": param.get("name", ""),
+                                "description": param.get("description", ""),
+                                "required": param.get("required", False),
+                                "schema": {
+                                    "type": param.get("type", "string"),
+                                },
+                            }
+                            parameters.append(new_param)
+                        
+                        if param["parameter_type"] == "body":
+                            property_name = param["name"]
+                            property_type = param["type"]
+                            properties[property_name] = {"type": property_type}
+                            
                     operation = {
                         # endpoint name is the view function name — use it as operationId
                         "operationId": f"{rule.endpoint}_{method.lower()}",
-                        "parameters": path_parameters,
-                        # Placeholder — real responses require per-view annotation (see note below)
+                        "parameters": parameters,
                         "responses": {
-                            "200": {"description": "Successful response"},
+                            "200": yaml_data.get(
+                                "200", {"description": "Successful Response"}
+                            )
                         },
                     }
+                    
+                    if method in {"POST","PUT","PATCH"}:
+                        operation["requestBody"] = {
+                            "required": method in {"POST", "PUT", "PATCH"},
+                            "description": yaml_data.get("description", ""),
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": properties,
+                                    }
+                                }
+                            },
+                        }
 
                     paths[openapi_path][method.lower()] = operation
 
