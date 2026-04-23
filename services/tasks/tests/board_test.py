@@ -44,7 +44,7 @@ def test_boards_list_returns_boards(client, monkeypatch):
         return [DummyModel(expected[0])]
 
     monkeypatch.setattr(
-        "app.apis.board.get_board_by_project", fake_get_board_by_project
+        "app.apis.board_api.get_board_by_project", fake_get_board_by_project
     )
 
     response = client.get("/api/v1/boards/?project_id=11&limit=2&offset=0")
@@ -65,7 +65,7 @@ def test_board_get_returns_board(client, monkeypatch):
     }
 
     monkeypatch.setattr(
-        "app.apis.board.get_board_by_id", lambda board_id: DummyModel(expected)
+        "app.apis.board_api.get_board_by_id", lambda board_id: DummyModel(expected)
     )
 
     response = client.get("/api/v1/boards/2")
@@ -92,7 +92,7 @@ def test_board_create_returns_created_board(client, monkeypatch):
     }
 
     monkeypatch.setattr(
-        "app.apis.board.create_board", lambda board_data: DummyModel(expected)
+        "app.apis.board_api.create_board", lambda board_data: DummyModel(expected)
     )
 
     response = client.post("/api/v1/boards/", json=payload)
@@ -113,7 +113,7 @@ def test_board_update_returns_updated_board(client, monkeypatch):
     }
 
     monkeypatch.setattr(
-        "app.apis.board.update_board", lambda board_id, board_data: DummyModel(expected)
+        "app.apis.board_api.update_board", lambda board_id, board_data: DummyModel(expected)
     )
 
     response = client.put("/api/v1/boards/4", json={"name": "Updated Board"})
@@ -123,7 +123,7 @@ def test_board_update_returns_updated_board(client, monkeypatch):
 
 
 def test_board_delete_returns_200(client, monkeypatch):
-    monkeypatch.setattr("app.apis.board.delete_board", lambda board_id: True)
+    monkeypatch.setattr("app.apis.board_api.delete_board", lambda board_id: True)
 
     response = client.delete("/api/v1/boards/5")
 
@@ -136,7 +136,7 @@ def test_board_delete_not_found_returns_404(client, monkeypatch):
         assert board_id == 5  # board_id is an int, not a string
         return False
 
-    monkeypatch.setattr("app.apis.board.delete_board", fake_delete_board)
+    monkeypatch.setattr("app.apis.board_api.delete_board", fake_delete_board)
 
     response = client.delete("/api/v1/boards/5")
 
