@@ -3,7 +3,7 @@ from app.models.task import Task, TaskStatus, TaskPriority
 from app.models.board import Board
 from app.schemas.task_schema import TaskCreate, TaskUpdate, TaskResponse
 from app.db.database import get_db_session
-
+from sqlalchemy import func
 
 def get_tasks(
     board_id: int,
@@ -80,15 +80,18 @@ def create_task(task_data: TaskCreate) -> TaskResponse:
 
 def update_task(task_id: int, task_data: TaskUpdate) -> Optional[TaskResponse]:
     with get_db_session() as db:
-        db_task = db.query(Task).filter(Task.id == task_id).first()
+        db_task: Task = db.query(Task).filter(Task.id == task_id).first()
 
         if not db_task:
             raise ValueError(f"Task with ID {task_id} not found!")
 
         for field, value in task_data.model_dump(exclude_unset=True).items():
             setattr(db_task, field, value)
-
-        db_task.updated_at = db.func.now()
+        
+        
+        
+        
+        db_task.updated_at = func.now()
         db.flush()
         db.refresh(db_task)
 
