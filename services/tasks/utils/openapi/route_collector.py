@@ -58,7 +58,7 @@ class RouteCollector:
                     if len(endpoint) < 2:
                         continue
                     module_name, function_name = endpoint
-                    base_module = importlib.import_module(f"app.apis.{module_name}")
+                    base_module = importlib.import_module(f"app.apis.{module_name}_api")
                     func_data = getattr(base_module, function_name)
 
                     if func_data:
