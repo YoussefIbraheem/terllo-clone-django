@@ -26,6 +26,7 @@ Flask-SQLAlchemy==3.1.1
 greenlet==3.3.1
 importlib_resources==6.5.2
 inflection==0.5.1
+iniconfig==2.3.0
 itsdangerous==2.2.0
 Jinja2==3.1.6
 jsonschema==4.26.0
@@ -37,13 +38,16 @@ MarkupSafe==3.0.3
 openapi-pydantic==0.5.1
 packaging==25.0
 pillow==12.1.0
+pluggy==1.6.0
 prompt_toolkit==3.0.52
 psycopg==3.3.2
 psycopg-binary==3.3.2
 psycopg2-binary==2.9.11
 pydantic==2.12.5
 pydantic_core==2.41.5
+Pygments==2.20.0
 PyJWT==2.10.1
+pytest==9.0.3
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.1
 pytz==2025.2
