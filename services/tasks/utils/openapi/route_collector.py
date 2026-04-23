@@ -62,7 +62,7 @@ class RouteCollector:
                     func_data = getattr(base_module, function_name)
 
                     if func_data:
-                        operation = self.parameters_extractor.extract(func_data)
+                        operation = self.operations_builder.build(func_data)
                         
                         paths[openapi_path][method.lower()] = operation
 

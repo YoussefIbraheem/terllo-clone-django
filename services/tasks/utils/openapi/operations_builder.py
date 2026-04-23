@@ -2,7 +2,7 @@ import inspect
 
 class OperationBuilder:
 
-    def extract(self, func_data):
+    def build(self, func_data):
         parameters = []
         properties = {}
         
