@@ -38,6 +38,36 @@ services:
       postgresdb:
         condition: service_healthy
 
+  history-service:
+    build: 
+      context: ./services/history
+      dockerfile: Dockerfile
+    container_name: history_service
+    ports:
+      - "5006:80"
+    env_file:
+      - ./services/history/.env
+    volumes:
+      - ./services/history:/app
+    depends_on:
+      mongodb:
+        condition: service_started
+
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+    - MONGODB_INITDB_ROOT_USERNAME=user
+    - MONGODB_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+      - db:/data/db
+      - configdb:/data/configdb
+      - mongot:/data/mongot
+
   postgresdb:
     image: postgres:16-alpine
     container_name: postgresdb
@@ -107,3 +137,9 @@ volumes:
   postgres_data:
   redis_data:
   rabbitmq_data:
+  db:
+  configdb:
+  mongot:
+
+
+

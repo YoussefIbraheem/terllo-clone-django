@@ -21,6 +21,21 @@
         ],
         "projectType": "django"
       }
+    },
+    {
+      "name": "Containers: Python - Fastapi",
+      "type": "docker",
+      "request": "launch",
+      "preLaunchTask": "docker-run: debug",
+      "python": {
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/app"
+          }
+        ],
+        "projectType": "fastapi"
+      }
     }
   ]
 }
