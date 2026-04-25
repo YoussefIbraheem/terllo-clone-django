@@ -28,4 +28,4 @@ EXPOSE 5006
 # USER appuser
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "5006"]
+CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "5006", "--reload"]

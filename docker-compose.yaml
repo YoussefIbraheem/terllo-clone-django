@@ -45,13 +45,11 @@ services:
     container_name: history_service
     ports:
       - "5006:5006"
-    env_file:
-      - ./services/history/.env
     volumes:
       - ./services/history:/app
     depends_on:
       mongodb:
-        condition: service_started
+        condition: service_healthy
 
   mongodb:
     image: mongodb/mongodb-community-server:latest
@@ -67,6 +65,8 @@ services:
       - db:/data/db
       - configdb:/data/configdb
       - mongot:/data/mongot
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
 
   postgresdb:
     image: postgres:16-alpine
