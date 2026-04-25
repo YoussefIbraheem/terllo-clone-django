@@ -44,7 +44,7 @@ services:
       dockerfile: Dockerfile
     container_name: history_service
     ports:
-      - "5006:80"
+      - "5006:5006"
     env_file:
       - ./services/history/.env
     volumes:
