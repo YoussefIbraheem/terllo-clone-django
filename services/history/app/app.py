@@ -1,7 +1,8 @@
 from fastapi import FastAPI
-from .core.config import settings
+from app.core.config import settings
 from contextlib import asynccontextmanager
-from .db.database import connect_to_mongo, close_mongo
+from app.db.database import connect_to_mongo, close_mongo
+from app.apis.event_api import router as event_router
 @asynccontextmanager
 async def lifespan(app:FastAPI):
     await connect_to_mongo()
@@ -24,3 +25,6 @@ def read_root():
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: str | None = None):
     return {"item_id": item_id, "q": q}
+
+
+app.include_router(event_router)
