@@ -5,8 +5,8 @@ from app.models.event import Event
 
 
 async def connect_to_mongo():
-    client = AsyncMongoClient(host=settings.MONGO_DB_URL)
-    database = client[settings.MONGO_DB_NAME]
+    client = AsyncMongoClient(host=settings.MONGO_DB_URL, authSource="admin")
+    database = client.get_database(settings.MONGO_DB_NAME)
     print(f"connecting to {settings.MONGO_DB_NAME}")
     await init_beanie(database=database,document_models=[Event])
     print("MongoDB connection established")

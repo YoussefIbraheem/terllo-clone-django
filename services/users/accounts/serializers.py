@@ -1,8 +1,6 @@
 from urllib import response
 from psycopg import logger
 from rest_framework import serializers
-
-from .tasks import verification_email_task
 from utils.generate_unique_number import generate_verification_code
 from .models import User, UserProfile, UserVerification
 from django.contrib.auth import password_validation, hashers, authenticate
@@ -98,7 +96,6 @@ class UserLoginSerializer(serializers.Serializer):
             )[0]
 
             logger.info(f"USER DATA:{user.id} \n CODE:{code.code}")
-            verification_email_task.delay(user.id, code.code)
 
             raise serializers.ValidationError(
                 "Account not verified. A new verification code has been sent to your email."

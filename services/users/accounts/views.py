@@ -12,10 +12,9 @@ from .serializers import (
     UserLogoutSerializer,
 )
 from .models import UserProfile, User, UserVerification
-from .tasks import welcome_email_task, verification_email_task
+from .tasks import publish_history_event
 from utils.generate_unique_number import generate_verification_code
 import logging
-
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +34,14 @@ class UserRegisterationView(views.APIView):
 
             user = serializer.save()
 
-            welcome_email_task.delay(user.email, user.username)
+            publish_history_event(
+                {
+                    "service": "users",
+                    "action": "user_register",
+                    "user_id": str(user.id),
+                    "details": {"email": user.email, "username": user.username},
+                }
+            )
 
             refresh = tokens.RefreshToken.for_user(user=user)
 
@@ -63,7 +69,7 @@ class UserLoginView(views.APIView):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data
-            
+
             refresh = tokens.RefreshToken.for_user(user=user)
 
             logger.warning(

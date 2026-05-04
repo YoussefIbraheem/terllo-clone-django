@@ -50,6 +50,10 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      redis:
+        condition: service_started
 
   mongodb:
     image: mongodb/mongodb-community-server:latest
@@ -108,8 +112,8 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
-  celery_worker:
-    container_name: celery_worker
+  celery_users_worker:
+    container_name: celery_users_worker
     build:
       context: ./services/users
       dockerfile: Dockerfile
@@ -132,6 +136,30 @@ services:
         condition: service_started
       users-service:
         condition: service_started
+  celery_history_worker:
+    container_name: celery_history_worker
+    build:
+      context: ./services/history
+      dockerfile: Dockerfile
+    command: celery -A app.tasks.event_task worker --loglevel=info --queues=history
+    volumes:
+      - ./services/history:/app
+    working_dir: /app
+    env_file:
+      - ./services/history/.env
+    environment:
+      MONGODB_HOST: mongodb
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      history-service:
+        condition: service_started
 
 volumes:
   postgres_data:
@@ -140,6 +168,4 @@ volumes:
   db:
   configdb:
   mongot:
-
-
 

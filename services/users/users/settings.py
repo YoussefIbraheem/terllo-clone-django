@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import environ
 import os
+from datetime import timedelta
 
 env = environ.Env(DEBUG=(bool, False))
 
@@ -191,6 +192,20 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=env.int("ACCESS_TOKEN_LIFETIME", default=5)
+    ),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=env.int("REFRESH_TOKEN_LIFETIME", default=1)
+    ),
+    "AUTH_HEADER_TYPES": ["Bearer"],
+}
+
 # Celery Broker Configuration
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND")
+CELERY_IGNORE_RESULT = True
+CELERY_TASK_ROUTES = {
+    "app.tasks.event_task.process_event_background": {"queue": "history"}
+}
